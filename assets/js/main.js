@@ -71,5 +71,4 @@ const m=$('.modal');
 if(m){document.addEventListener('click',e=>{const d=e.target.closest('.dr');if(d){$('img',m).src=d.dataset.img;m.classList.add('on')}else if(e.target!==$('img',m)&&m.classList.contains('on'))m.classList.remove('on')});addEventListener('keydown',e=>e.key==='Escape'&&m.classList.remove('on'))}
 let z=1;const si=$('#sld');
 $$('[data-zoom]').forEach(x=>x.onclick=()=>{z=x.dataset.zoom==='r'?1:Math.min(3,Math.max(.5,z+(x.dataset.zoom==='+'?.25:-.25)));if(si)si.style.transform=`scale(${z})`});
-const f=$('#contact form');if(f)f.onsubmit=e=>{e.preventDefault();const q=new FormData(f);const body=`Name: ${q.get('n')}\nEmail: ${q.get('e')}\n\nMessage:\n${q.get('m')}`;location.href=`mailto:eng.mohamed.reda82@gmail.com?subject=${encodeURIComponent('Portfolio inquiry from '+q.get('n'))}&body=${encodeURIComponent(body)}`};
 })();
