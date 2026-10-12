@@ -35,7 +35,7 @@ G.add(new T.Points(pg,new T.PointsMaterial({map:sprite,color:0x7dd3fc,size:.42,t
 // perspective floor grid
 const grid=new T.GridHelper(44,44,0x1d4ed8,0x15233d);grid.position.y=-5;grid.material.transparent=true;grid.material.opacity=.55;S.add(grid);
 function step(dt){pulse.forEach((p,i)=>{p.t+=p.v*dt;if(p.t>1){p.t=0;p.e=Math.floor(rnd()*E.length)}const a=P[E[p.e][0]],b=P[E[p.e][1]];pa[i*3]=a.x+(b.x-a.x)*p.t;pa[i*3+1]=a.y+(b.y-a.y)*p.t;pa[i*3+2]=a.z+(b.z-a.z)*p.t});pg.attributes.position.needsUpdate=true}
-function size(){const w=cv.parentElement.clientWidth,h=cv.parentElement.clientHeight;R.setSize(w,h,false);cam.aspect=w/h;cam.position.set(0,1.5,w/h<1?17:12);cam.updateProjectionMatrix()}
+function size(){const w=cv.parentElement.clientWidth,h=cv.parentElement.clientHeight,portrait=w/h<1;R.setSize(w,h,false);cam.aspect=w/h;cam.position.set(0,portrait?1.5:1.5,portrait?13:12);cam.fov=portrait?68:55;cam.updateProjectionMatrix();G.rotation.z=portrait?Math.PI/2:0}
 new ResizeObserver(size).observe(cv.parentElement);size();
 let mx=0,my=0,tx=0,ty=0,run=true,last=performance.now(),t0=0;
 addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5},{passive:true});

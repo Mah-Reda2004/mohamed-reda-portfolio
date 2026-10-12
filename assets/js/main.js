@@ -2,6 +2,10 @@
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const b=$('.burger'),u=$('.nav ul');
 if(b){b.onclick=()=>{const o=u.classList.toggle('on');b.setAttribute('aria-expanded',o)};$$('a',u).forEach(a=>a.onclick=e=>{u.classList.remove('on');b.setAttribute('aria-expanded','false');if(document.body.classList.contains('project-view-open')){const target=document.querySelector(a.getAttribute('href'));if(target){e.preventDefault();document.body.classList.remove('project-view-open');const view=document.querySelector('#project-view');if(view){view.hidden=true;document.querySelector('#project-content')?.replaceChildren()}history.replaceState(null,'',a.getAttribute('href'));target.scrollIntoView({behavior:'smooth',block:'start'})}}})}
+const navLinks=$$('.nav ul a[href^="#"]');
+const setActiveNav=id=>navLinks.forEach(a=>{const active=a.hash===`#${id}`;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current')});
+const updateActiveNav=()=>{if(document.body.classList.contains('project-view-open'))return;let current='home';for(const a of navLinks){const target=$(a.hash);if(target&&target.getBoundingClientRect().top<=130)current=target.id}setActiveNav(current)};
+if(navLinks.length){setActiveNav(location.hash.slice(1)||'home');let navTick=false;addEventListener('scroll',()=>{if(navTick)return;navTick=true;requestAnimationFrame(()=>{updateActiveNav();navTick=false})},{passive:true});addEventListener('hashchange',updateActiveNav);navLinks.forEach(a=>a.addEventListener('click',()=>setActiveNav(a.hash.slice(1))))}
 // ===== Data (edit here, not in HTML) =====
 const P=[['PRJ-01','Villa Electrical Design','Complete electrical design for a three-story residential villa in Saudi Arabia, covering power, lighting, distribution, cable routing, earthing, and low-current systems.',['Residential','Saudi Arabia','AutoCAD'],'projects/electrical-distribution.html','assets/img/PJ-1/Screenshot 2026-10-08 180629.png'],
 ['PRJ-02','School Electrical BIM Design','Revit-based electrical design for a two-story school, including lighting, power, Low Current, HVAC power supply, cable routing, and electrical documentation.',['Educational','Revit','Electrical BIM'],'projects/school-electrical-bim.html','assets/img/prj-2/cover.png'],
@@ -13,11 +17,12 @@ const T=[['Total Connected Power','2,450.0 kVA','IEC 60364-1','Direct load aggre
 const D=[['E-101','Overall Single Line Diagram','Normal and emergency switchboards with interlocking logic.'],['E-104','MDB Schedule & Breaker Settings','Phase balance L1 33.4%, L2 33.1%, L3 33.5%.'],['E-202','Basement & Typical Floor Power','Sockets, industrial disconnects, earth conduits.'],['E-305','Cable Tray Routing & Coordination','Multi-tier ladder layout with sections and risers.'],['R-ECO-02','Ecodial Tripping Curves','Selectivity across main and feeder breakers.'],['E-401','Earthing System & Inspection Wells','Earth electrodes, test pits, column bonding.']];
 // ===== Render =====
 const set=(id,h)=>{const e=document.getElementById(id);if(e)e.innerHTML=h};
-set('projects',P.map(p=>`<article class="card proj"><div class="th ${p[0]==='PRJ-03'?'contain':''}"><img src="${p[5]||`assets/img/${p[0].toLowerCase()}.jpg`}" alt="${p[1]} project cover" loading="lazy" onerror="this.remove()"><span>${p[0]}</span></div><div class="bd"><h3>${p[1]}</h3><p>${p[2]}</p><div class="chips">${p[3].map(t=>`<span class="tag">${t}</span>`).join('')}</div><a class="go" href="${p[4]||'#'}" data-project-view>View Project</a></div></article>`).join(''));
+set('projects',P.map(p=>`<article class="card proj"><div class="th ${p[0]==='PRJ-03'?'contain':''}"><img src="${encodeURI(p[5]||`assets/img/${p[0].toLowerCase()}.jpg`)}" alt="${p[1]} project cover" loading="lazy" onerror="this.remove()"><span>${p[0]}</span></div><div class="bd"><h3>${p[1]}</h3><p>${p[2]}</p><div class="chips">${p[3].map(t=>`<span class="tag">${t}</span>`).join('')}</div><a class="go" href="${p[4]||'#'}" data-project-view>View Project</a></div></article>`).join(''));
 set('cert-grid',C.map(x=>`<div class="card cert"><h3>${x[0]}</h3><p>${x[1]}</p></div>`).join(''));
 set('wbs',W.map(x=>{x=x.split('|');return`<div class="card"><h3>${x[0]}</h3><p>${x[1]}</p></div>`}).join(''));
 set('params',T.map(r=>`<tr><td>${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]}</td><td><span class="ok">${r[4]}</span></td></tr>`).join(''));
 const villaDrawings=[
+['Screenshot 2026-10-08 180655.png','Villa Exterior Rendering','Exterior rendering of the residential villa electrical design project.'],
 ['Screenshot 2026-10-08 180748.png','Ground-Floor Electrical Layout','Electrical lighting and power layout for the ground floor.'],
 ['Screenshot 2026-10-08 180813.png','Ground-Floor Plan — Detailed View','Detailed view of the ground-floor electrical layout and distribution.'],
 ['Screenshot 2026-10-08 180832.png','Upper-Floor Electrical Layout','Electrical lighting and power layout for the upper floor.'],
@@ -26,7 +31,7 @@ const villaDrawings=[
 ['Screenshot 2026-10-08 184934.png','Electrical Layout & Coordination Notes','Electrical layout showing routing information and technical notes.'],
 ['Screenshot 2026-10-08 184955.png','Cable Routing & Connection Details','Detailed electrical routing and connection information.']
 ];
-if(!document.body.classList.contains('school-project')&&!document.body.classList.contains('bank-project'))set('drawings',villaDrawings.map(x=>{const src=`../assets/img/PJ-1/${x[0]}`;return`<article class="card dr" data-img="${src}"><div class="im"><img src="${src}" alt="${x[1]}" loading="lazy"></div><div class="dr-copy"><h3>${x[1]}</h3><p>${x[2]}</p></div></article>`}).join(''));
+if(!document.body.classList.contains('school-project')&&!document.body.classList.contains('bank-project'))set('drawings',villaDrawings.map(x=>{const src=`../assets/img/PJ-1/${encodeURIComponent(x[0])}`;return`<article class="card dr" data-img="${src}"><div class="im"><img src="${src}" alt="${x[1]}" loading="lazy"></div><div class="dr-copy"><h3>${x[1]}</h3><p>${x[2]}</p></div></article>`}).join(''));
 // ===== Interactions =====
 const projectView=$('#project-view'),projectContent=$('#project-content');
 const closeProjectView=()=>{if(!projectView)return;projectView.hidden=true;projectContent.replaceChildren();document.body.classList.remove('project-view-open')};
@@ -43,6 +48,10 @@ if(projectView){
         const href=el.getAttribute('href');if(!href||href.startsWith('#')||/^(https?:|mailto:|tel:|data:)/i.test(href))return;
         el.href=new URL(href,base);
       });
+      const drawings=main.querySelector('#drawings');
+      if(drawings&&!main.classList.contains('school-project')&&!main.classList.contains('bank-project'))drawings.innerHTML=villaDrawings.map(x=>{const src=new URL(`../assets/img/PJ-1/${encodeURIComponent(x[0])}`,base).href;return`<article class="card dr" data-img="${src}"><div class="im"><img src="${src}" alt="${x[1]}" loading="lazy"></div><div class="dr-copy"><h3>${x[1]}</h3><p>${x[2]}</p></div></article>`}).join('');
+      const wbs=main.querySelector('#wbs');
+      if(wbs)wbs.innerHTML=W.map(item=>{const [title,description]=item.split('|');return`<div class="card"><h3>${title}</h3><p>${description}</p></div>`}).join('');
       const modal=page.querySelector('.modal');
       projectContent.replaceChildren(main);
       if(modal){
@@ -51,6 +60,7 @@ if(projectView){
         main.addEventListener('click',event=>{const drawing=event.target.closest('.dr');if(drawing){const image=modal.querySelector('img');image.src=drawing.dataset.img;modal.classList.add('on')}});
       }
       projectView.hidden=false;document.body.classList.add('project-view-open');
+      setActiveNav('projects');
       projectView.dataset.currentUrl=base.href;
       projectView.scrollIntoView({behavior:'smooth',block:'start'});
     }catch(error){location.href=url}
